@@ -22,9 +22,50 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.car, function (sprite, otherSpri
     info.changeLifeBy(-1)
     effects.confetti.endScreenEffect()
 })
+function levels (num: number) {
+    if (level == 0) {
+        tiles.setCurrentTilemap(tilemap`level1`)
+    } else if (level == 1) {
+        tiles.setCurrentTilemap(tilemap`level2`)
+    }
+}
+function coins (num: number) {
+    for (let index = 0; index < num + 2; index++) {
+        for (let index = 0; index < num + 2; index++) {
+            coin = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . b d b . . . . . . 
+                . . . . . . . b d b c . . . . . 
+                . . . . b b c 5 5 5 c b b . . . 
+                . . . . b 5 5 5 1 5 5 5 b . . . 
+                . . . c c 5 5 5 1 5 5 5 c c . . 
+                . . b b 5 5 5 1 1 1 5 5 5 b b . 
+                . . d d 5 1 1 1 1 1 1 1 5 d d . 
+                . . b b 5 5 5 1 1 1 5 5 5 b b . 
+                . . . c c 5 5 5 1 5 5 5 c c . . 
+                . . . . b 5 5 5 1 5 5 5 b . . . 
+                . . . . b b c 5 5 5 c b b . . . 
+                . . . . . . c b d b c . . . . . 
+                . . . . . . . b d b . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Enemy)
+            tiles.placeOnRandomTile(coin, sprites.castle.tilePath4)
+            tiles.placeOnRandomTile(coin, sprites.castle.tilePath5)
+            tiles.placeOnRandomTile(coin, sprites.castle.tilePath6)
+            tiles.placeOnRandomTile(coin, sprites.dungeon.darkGroundCenter)
+        }
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeScoreBy(1)
+    sprites.destroy(otherSprite)
+})
 let myVariable = 0
+let coin: Sprite = null
 let carr: Sprite = null
 let mySprite: Sprite = null
+let level = 0
 let different_cars: Image[] = []
 different_cars = [
 img`
@@ -119,6 +160,7 @@ img`
     `
 ]
 info.setLife(1)
+level = randint(0, 1)
 tiles.setCurrentTilemap(tilemap`level1`)
 mySprite = sprites.create(img`
     . . . . . . . . . . b 5 b . . . 
@@ -138,18 +180,15 @@ mySprite = sprites.create(img`
     . . c b d d d d d 5 5 5 b b . . 
     . . . c c c c c c c c b b . . . 
     `, SpriteKind.Player)
-let myMinimap = minimap.minimap()
-minimap.includeSprite(myMinimap, mySprite, MinimapSpriteScale.MinimapScale)
-controller.moveSprite(mySprite, 20, 20)
+controller.moveSprite(mySprite, 65, 68)
 scene.cameraFollowSprite(mySprite)
-scroller.scrollBackgroundWithCamera(scroller.CameraScrollMode.OnlyVertical)
+scroller.scrollBackgroundWithSpeed(0, -50)
+levels(1)
 // BRO IS NOT COOKING WITH THIS - kayden
 game.onUpdateInterval(5000, function () {
     spawncar(1)
 })
-/**
- * yea trevon your cooked ngl. - kayden
- */
+// yea trevon your cooked ngl. - kayden
 game.onUpdateInterval(100, function () {
     for (let index = 0; index < 10; index++) {
         myVariable += 1
@@ -159,4 +198,7 @@ game.onUpdateInterval(100, function () {
 game.onUpdateInterval(100, function () {
     let list: string[] = []
     list.push("\"New Car\"" + "")
+})
+game.onUpdateInterval(10000, function () {
+    coins(1)
 })
